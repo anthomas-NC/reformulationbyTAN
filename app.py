@@ -5,6 +5,7 @@ import requests
 
 app = Flask(__name__)
 
+# Récupération de la clé API DeepSeek depuis les variables d'environnement
 API_KEY = os.getenv("DEEPSEEK_API_KEY")
 API_URL = "https://api.deepseek.com/v1/chat/completions"
 
@@ -38,13 +39,25 @@ Texte à reformuler :
         ]
     }
 
+    # Appel API
     response = requests.post(API_URL, headers=headers, json=payload)
-    result = response.json()
 
-    reformulation = result["choices"][0]["message"]["content"]
+    # LOG IMPORTANT POUR DEBUG
+    print("DEBUG RAW RESPONSE:", response.text)
 
-    return jsonify({"reformulation": reformulation})
+    try:
+        result = response.json()
+        reformulation = result["choices"][0]["message"]["content"]
+        return jsonify({"reformulation": reformulation})
 
+    except Exception as e:
+        # Retourne l'erreur brute pour comprendre ce que renvoie DeepSeek
+        return jsonify({
+            "error": f"Erreur API : {str(e)}",
+            "raw_response": response.text
+        })
+
+# Lancement compatible Render (port dynamique)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
