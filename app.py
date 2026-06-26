@@ -5,7 +5,6 @@ import requests
 
 app = Flask(__name__)
 
-# Récupération de la clé API DeepSeek depuis les variables d'environnement
 API_KEY = os.getenv("DEEPSEEK_API_KEY")
 API_URL = "https://api.deepseek.com/v1/chat/completions"
 
@@ -47,4 +46,5 @@ Texte à reformuler :
     return jsonify({"reformulation": reformulation})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=7860)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
